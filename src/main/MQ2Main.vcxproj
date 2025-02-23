@@ -77,6 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CodeAnalysisRuleSet>..\VisualStudioAnalysis.ruleset</CodeAnalysisRuleSet>
     <IncludePath>$(VCPKG_IncludeStatic)\crashpad-backtrace;$(IncludePath)</IncludePath>
+    <TargetName>dinput8</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CodeAnalysisRuleSet>..\VisualStudioAnalysis.ruleset</CodeAnalysisRuleSet>
@@ -129,6 +130,7 @@
     <Link>
       <BaseAddress>0x03000000</BaseAddress>
       <AdditionalDependencies>fmtd.lib;pathcch.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;common.lib;client.lib;util.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>dinput8.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -515,9 +517,15 @@
     <ClCompile Include="GraphicsEngineDX11.cpp" />
     <ClCompile Include="GraphicsEngineDX9.cpp" />
     <ClCompile Include="GraphicsResources.cpp" />
+    <ClCompile Include="IDirectInput8A.cpp" />
+    <ClCompile Include="IDirectInput8W.cpp" />
+    <ClCompile Include="IDirectInputDevice8A.cpp" />
+    <ClCompile Include="IDirectInputDevice8W.cpp" />
+    <ClCompile Include="IDirectInputEffect.cpp" />
     <ClCompile Include="ImGuiBackendDX11.cpp" />
     <ClCompile Include="ImGuiBackendDX9.cpp" />
     <ClCompile Include="ImGuiBackendWin32.cpp" />
+    <ClCompile Include="InterfaceQuery.cpp" />
     <ClCompile Include="MQ2Anonymize.cpp" />
     <ClCompile Include="MQ2AutoInventory.cpp" />
     <ClCompile Include="MQ2Benchmarks.cpp" />
@@ -624,13 +632,20 @@
     <ClInclude Include="..\eqdata\itemclasses.h" />
     <ClInclude Include="..\eqdata\skills.h" />
     <ClInclude Include="..\eqdata\spelleffects.h" />
+    <ClInclude Include="AddressLookupTable.h" />
     <ClInclude Include="datatypes\DataTypeList.h" />
     <ClInclude Include="datatypes\MQ2DataTypes.h" />
     <ClInclude Include="CrashHandler.h" />
     <ClCompile Include="ImGuiManager.cpp" />
+    <ClInclude Include="dinput8_hook.h" />
     <ClInclude Include="emu\EmuExtensions.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="GraphicsResources.h" />
+    <ClInclude Include="IDirectInput8A.h" />
+    <ClInclude Include="IDirectInput8W.h" />
+    <ClInclude Include="IDirectInputDevice8A.h" />
+    <ClInclude Include="IDirectInputDevice8W.h" />
+    <ClInclude Include="IDirectInputEffect.h" />
     <ClInclude Include="ImGuiBackend.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="MQ2Commands.h" />
@@ -688,6 +703,7 @@
     <None Include="..\..\data\resources\CHANGELOG.md" />
     <None Include="..\..\data\resources\Zones.ini" />
     <None Include="..\..\LICENSE.md" />
+    <None Include="dinput8.def" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\data\resources\ItemDB.txt" />

@@ -78,6 +78,12 @@
     <Filter Include="Header Files\emu">
       <UniqueIdentifier>{e76cfbc5-b95f-40ca-b940-ffc54cbd169e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\dinput8_hook">
+      <UniqueIdentifier>{7ab54d3f-a98b-4632-be00-9a3f63ffa896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dinput8_hook">
+      <UniqueIdentifier>{bf26a53d-466c-4f7b-bfd6-6c3247b43f03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MQ2AutoInventory.cpp">
@@ -416,6 +422,24 @@
     <ClCompile Include="MQRenderDoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IDirectInput8A.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="IDirectInput8W.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="IDirectInputDevice8A.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="IDirectInputDevice8W.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="IDirectInputEffect.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
+    <ClCompile Include="InterfaceQuery.cpp">
+      <Filter>Source Files\dinput8_hook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MQ2Commands.h">
@@ -691,6 +715,27 @@
     <ClInclude Include="..\..\include\mq\imgui\MQConsoleDelegate.h">
       <Filter>Header Files\mq\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="dinput8_hook.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="IDirectInput8A.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="IDirectInput8W.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="IDirectInputDevice8A.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="IDirectInputDevice8W.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="IDirectInputEffect.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressLookupTable.h">
+      <Filter>Header Files\dinput8_hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MQ2Main.rc">
@@ -711,6 +756,9 @@
     </None>
     <None Include="..\..\data\resources\Zones.ini">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="dinput8.def">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

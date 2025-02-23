@@ -13,6 +13,7 @@
  */
 
 #include "pch.h"
+#include "dinput8_hook.h"
 #include "MQ2Main.h"
 #include "CrashHandler.h"
 #include "MQActorAPI.h"
@@ -87,6 +88,89 @@
 
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
+
+AddressLookupTable<void> ProxyAddressLookupTable = AddressLookupTable<void>();
+
+DirectInput8CreateProc m_pDirectInput8Create;
+DllCanUnloadNowProc m_pDllCanUnloadNow;
+DllGetClassObjectProc m_pDllGetClassObject;
+DllRegisterServerProc m_pDllRegisterServer;
+DllUnregisterServerProc m_pDllUnregisterServer;
+GetdfDIJoystickProc m_pGetdfDIJoystick;
+
+HRESULT WINAPI DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID* ppvOut, LPUNKNOWN punkOuter)
+{
+	if (!m_pDirectInput8Create)
+	{
+		return E_FAIL;
+	}
+
+	HRESULT hr = m_pDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
+
+	if (SUCCEEDED(hr))
+	{
+		genericQueryInterface(riidltf, ppvOut);
+	}
+
+	return hr;
+}
+
+HRESULT WINAPI DllCanUnloadNow()
+{
+	if (!m_pDllCanUnloadNow)
+	{
+		return E_FAIL;
+	}
+
+	return m_pDllCanUnloadNow();
+}
+
+HRESULT WINAPI DllGetClassObject(IN REFCLSID rclsid, IN REFIID riid, OUT LPVOID FAR* ppv)
+{
+	if (!m_pDllGetClassObject)
+	{
+		return E_FAIL;
+	}
+
+	HRESULT hr = m_pDllGetClassObject(rclsid, riid, ppv);
+
+	if (SUCCEEDED(hr))
+	{
+		genericQueryInterface(riid, ppv);
+	}
+
+	return hr;
+}
+
+HRESULT WINAPI DllRegisterServer()
+{
+	if (!m_pDllRegisterServer)
+	{
+		return E_FAIL;
+	}
+
+	return m_pDllRegisterServer();
+}
+
+HRESULT WINAPI DllUnregisterServer()
+{
+	if (!m_pDllUnregisterServer)
+	{
+		return E_FAIL;
+	}
+
+	return m_pDllUnregisterServer();
+}
+
+LPCDIDATAFORMAT WINAPI GetdfDIJoystick()
+{
+	if (!m_pGetdfDIJoystick)
+	{
+		return nullptr;
+	}
+
+	return m_pGetdfDIJoystick();
+}
 
 namespace mq {
 
@@ -170,12 +254,14 @@ void ShutdownLogging()
 	spdlog::shutdown();
 }
 
-extern "C" BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, void* lpReserved)
-{
+extern "C" BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, void* lpReserved){	
+
 	if (ul_reason_for_call != DLL_PROCESS_ATTACH && ul_reason_for_call != DLL_PROCESS_DETACH)
 	{
 		return true;
 	}
+
+	static HMODULE dinput8dll = nullptr;
 
 	char szFilename[MAX_STRING] = { 0 };
 	ghModule = (HMODULE)hModule;
@@ -191,7 +277,22 @@ extern "C" BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, void*
 	if (_stricmp(szProcessName, "eqgame") == 0)
 	{
 		if (ul_reason_for_call == DLL_PROCESS_ATTACH)
-		{
+		{		
+			// Load dll
+			char path[MAX_PATH];
+			GetSystemDirectoryA(path, MAX_PATH);
+			strcat_s(path, "\\dinput8.dll");
+
+			dinput8dll = LoadLibraryA(path);
+
+			// Get function addresses
+			m_pDirectInput8Create = (DirectInput8CreateProc)GetProcAddress(dinput8dll, "DirectInput8Create");
+			m_pDllCanUnloadNow = (DllCanUnloadNowProc)GetProcAddress(dinput8dll, "DllCanUnloadNow");
+			m_pDllGetClassObject = (DllGetClassObjectProc)GetProcAddress(dinput8dll, "DllGetClassObject");
+			m_pDllRegisterServer = (DllRegisterServerProc)GetProcAddress(dinput8dll, "DllRegisterServer");
+			m_pDllUnregisterServer = (DllUnregisterServerProc)GetProcAddress(dinput8dll, "DllUnregisterServer");
+			m_pGetdfDIJoystick = (GetdfDIJoystickProc)GetProcAddress(dinput8dll, "GetdfDIJoystick");
+
 			::SetDllDirectoryA(nullptr);
 
 			// Get path to the dll and strip off the filename
@@ -207,7 +308,7 @@ extern "C" BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, void*
 			hMQ2StartThread = CreateThread(nullptr, 0, MQ2Start, _strdup(szFilename), 0, &ThreadID);
 		}
 		else if (ul_reason_for_call == DLL_PROCESS_DETACH)
-		{
+		{	
 			gbUnload = true;
 
 			if (hMQ2StartThread)
@@ -232,7 +333,7 @@ bool InitDirectory(std::string& strPathToInit,
 	const std::string& iniToRead,
 	const std::filesystem::path& appendPathIfRelative = mq::internal_paths::MQRoot)
 {
-	DebugSpewAlways("Initializing Directory:  %s", strIniKey.c_str());
+	DebugSpewAlways("Initializing Directory:  %s", strIniKey.c_str()); static HMODULE dinput8dll = nullptr;
 
 	std::filesystem::path pathToInit =
 		GetPrivateProfileString("MacroQuest", strIniKey, strPathToInit, iniToRead);
